@@ -13,6 +13,9 @@
   'use strict';
 
   const CHECK_INTERVAL_MS = 1000;
+  const CLICK_COOLDOWN_MS = 3000; // don't click anything again for 3s after a click
+
+  let lastClickTime = 0;
 
   // ---------------------------------------------------------
   // NETFLIX
@@ -27,11 +30,14 @@
   ];
 
   function clickIfFoundNetflix() {
+    if (Date.now() - lastClickTime < CLICK_COOLDOWN_MS) return;
     for (const sel of NETFLIX_SELECTORS) {
       const btn = document.querySelector(sel);
       if (btn) {
         console.log('[AutoSkip] Netflix clicking:', sel);
         btn.click();
+        lastClickTime = Date.now();
+        return;
       }
     }
   }
@@ -47,16 +53,20 @@
     '.skip-button',
     '[class*="skip-credits"]',
     '[class*="skip-intro"]',
+    '[class*="skip-preview"]',
     '[class*="upnext"] button',
     '[data-testid="play-next-episode-button"]',
   ];
 
   function clickIfFoundCrunchyroll() {
+    if (Date.now() - lastClickTime < CLICK_COOLDOWN_MS) return;
+
     for (const sel of CRUNCHYROLL_SELECTORS) {
       const btn = document.querySelector(sel);
       if (btn) {
         console.log('[AutoSkip] Crunchyroll clicking (selector):', sel);
         btn.click();
+        lastClickTime = Date.now();
         return;
       }
     }
@@ -66,14 +76,16 @@
     for (const btn of buttons) {
       const text = (btn.textContent || '').trim().toLowerCase();
       if (
-        text === 'skip intro' ||
-        text === 'skip recap' ||
-        text === 'skip credits' ||
+        text.startsWith('skip intro') ||
+        text.startsWith('skip recap') ||
+        text.startsWith('skip credits') ||
+        text.startsWith('skip preview') ||
         text === 'skip' ||
-        text === 'play next'
+        text.startsWith('play next')
       ) {
         console.log('[AutoSkip] Crunchyroll clicking (text match):', text);
         btn.click();
+        lastClickTime = Date.now();
         return;
       }
     }
