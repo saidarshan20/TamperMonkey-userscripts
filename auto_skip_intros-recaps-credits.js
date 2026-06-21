@@ -8,6 +8,7 @@
 // @match        https://www.crunchyroll.com/*
 // @run-at       document-idle
 // ==/UserScript==
+// Initial version with a single global cooldown timer to prevent rapid clicks. Uses known selectors for Netflix and Crunchyroll, but no fallback if they change.
 
 (function () {
   'use strict';
